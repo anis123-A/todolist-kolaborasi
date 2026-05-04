@@ -7,24 +7,35 @@ use App\Models\Task;
 
 class Controller extends \Illuminate\Routing\Controller
 {
-    // --- TUGAS SALMIA (READ): Menampilkan semua tugas ---
+    // --- TUGAS SALMIA (READ) ---
     public function index()
     {
-        // Mengambil semua data dari tabel tasks
         $tasks = Task::all(); 
-        
-        // Menampilkan ke file resources/views/tasks.blade.php
         return view('tasks', compact('tasks'));
     }
 
-    // --- TUGAS SALMIA (DELETE): Menghapus tugas ---
+    // --- TUGAS SALMIA (DELETE) ---
     public function destroy($id)
     {
-        // Cari data berdasarkan ID dan hapus
         $task = Task::findOrFail($id);
         $task->delete();
-
-        // Kembali ke halaman sebelumnya dengan pesan sukses
         return redirect()->back()->with('success', 'Tugas berhasil dihapus!');
+    }
+
+    // --- TUGAS ANNIS (CREATE)
+    public function store(Request $request)
+    {
+        // Validasi input
+        $request->validate([
+            'task_name' => 'required|max:255',
+        ]);
+
+        // Simpan data baru ke database
+        Task::create([
+            'task_name' => $request->task_name,
+            'is_completed' => false,
+        ]);
+
+        return redirect()->back()->with('success', 'Tugas berhasil ditambahkan!');
     }
 }
